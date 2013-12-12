@@ -4,21 +4,25 @@ var map = L.mapbox.map('map', 'tmcw.map-oitj0si5')
 
 var fl = L.geoJson().addTo(map);
 
+
 $.ajax({
     url: 'master.json',
     success: function(master) {
         $.ajax({
-            url: 'index.json',
+            url: 'rectangles.json',
 			dataType: 'json',
-            success: function(dat) {
+            success: function(rectangles) {
                 $('#fm').on('submit', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
+					//Send user's location information to Mapbox
                     $.ajax('http://api.tiles.mapbox.com/v3/tmcw.map-jcq5zhdm/geocode/' +
                       encodeURIComponent($('#address').val()) + '.json').done(function(res) {
                           if (res.results && res.results[0] && res.results[0][0]) {
-                              var areas = findLocation(dat, res.results[0][0]);
-                              if (areas.length) loadResults(res.results[0][0], areas, master);
+								//If Mapbox returns a location, find the rectangles in which the location lies
+                              var rect_hits = findLocation(rectangles, res.results[0][0]);
+							  //If there is at least one rectangle, do a point-in-polygon search in the corresponding service area(s)
+                              if (rect_hits.length) loadResults(res.results[0][0], rect_hits, master);
                           }
                       });
                     return false;
@@ -28,19 +32,19 @@ $.ajax({
     }
 });
 
-function findLocation(index, ll) {
+function findLocation(rectangles, ll) {
 
     var results = [];
 
-    for (var i = 0; i < index.length; i++) {
+    for (var i = 0; i < rectangles.length; i++) {
 
-        if (ll.lon > index[i][0] &&
-            ll.lon < index[i][2] &&
+        if (ll.lon > rectangles[i][0] &&
+            ll.lon < rectangles[i][2] &&
 
-            ll.lat > index[i][1] &&
-            ll.lat < index[i][3]) {
+            ll.lat > rectangles[i][1] &&
+            ll.lat < rectangles[i][3]) {
 
-            results.push(index[i]);
+            results.push(rectangles[i]);
 
         }
 
@@ -57,15 +61,15 @@ function loadResult(r, cb) {
 
 var q = queue(1);
 
-function loadResults(center, results, list) {
+function loadResults(center, rectangles, list) {
 
-    results.forEach(function(r) {
+    rectangles.forEach(function(r) {
         q.defer(loadResult, r);
     });
 
-    q.awaitAll(function(err, results) {
+    q.awaitAll(function(err, rectangles) {
 
-        var res = results.filter(function(r) {
+        var res = rectangles.filter(function(r) {
             return gju.pointInPolygon({
                 type: 'Point',
                 coordinates: [center.lon, center.lat]
