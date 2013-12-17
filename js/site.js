@@ -4,48 +4,48 @@ var map = L.mapbox.map('map', 'tmcw.map-oitj0si5')
 
 var fl = L.geoJson().addTo(map);
 
-
 $.ajax({
     url: 'master.json',
     success: function(master) {
         $.ajax({
-            url: 'rectangles.json',
-			dataType: 'json',
-            success: function(rectangles) {
+				url: 'Rectangles.json',
+				dataType: 'json',
+				success: function(dat) {
                 $('#fm').on('submit', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
-					//Send user's location information to Mapbox
                     $.ajax('http://api.tiles.mapbox.com/v3/tmcw.map-jcq5zhdm/geocode/' +
                       encodeURIComponent($('#address').val()) + '.json').done(function(res) {
                           if (res.results && res.results[0] && res.results[0][0]) {
-								//If Mapbox returns a location, find the rectangles in which the location lies
-                              var rect_hits = findLocation(rectangles, res.results[0][0]);
-							  //If there is at least one rectangle, do a point-in-polygon search in the corresponding service area(s)
-                              if (rect_hits.length) loadResults(res.results[0][0], rect_hits, master);
+                              var areas = findLocation(dat, res.results[0][0]);
+                              if (areas.length) loadResults(res.results[0][0], areas, master);
                           }
                       });
                     return false;
                 });
-            }
+            },
+				error: function(jqxhr, status, error) {
+						alert("Status: " + status + ". Error: " + error);
+				}
         });
     }
 });
 
-function findLocation(rectangles, ll) {
+function findLocation(index, ll) {
 
     var results = [];
 
-    for (var i = 0; i < rectangles.length; i++) {
+    for (var i = 0; i < index.length; i++) {
 
-        if (ll.lon > rectangles[i][0] &&
-            ll.lon < rectangles[i][2] &&
 
-            ll.lat > rectangles[i][1] &&
-            ll.lat < rectangles[i][3]) {
+     if (ll.lat > index[i][0] &&
+            ll.lat < index[i][1] &&
 
-            results.push(rectangles[i]);
+            ll.lon > index[i][2] &&
+            ll.lon < index[i][3]) {
 
+		  
+            results.push(index[i]);
         }
 
     }
@@ -54,26 +54,35 @@ function findLocation(rectangles, ll) {
 }
 
 function loadResult(r, cb) {
-    $.getJSON('areas/' + r[4] + '.geojson').done(function(d) {
+	$.ajaxSetup({ cache: false });
+	$.getJSON('geojson/' + r[4] + '.geojson').done(
+		function(d) {
         cb(null, d);
-    });
+		}
+	);
 }
 
 var q = queue(1);
 
-function loadResults(center, rectangles, list) {
+function loadResults(center, results, list) {
 
-    rectangles.forEach(function(r) {
+    results.forEach(function(r) {
         q.defer(loadResult, r);
     });
 
-    q.awaitAll(function(err, rectangles) {
+    q.awaitAll(function(err, results) {
 
-        var res = rectangles.filter(function(r) {
-            return gju.pointInPolygon({
-                type: 'Point',
-                coordinates: [center.lon, center.lat]
-            }, r.geometry);
+        var res = results.filter(
+				function(r) {
+					var inPolygon = false;
+					for (var i = 0; i < r.features.length; i++) {
+						inPolygon = inPolygon || gju.pointInPolygon(
+							 {type: 'Point',
+							 coordinates: [center.lon, center.lat]}
+							, r.features[0].geometry
+						);
+					}
+					return inPolygon;
         })[0];
 
         if (!res) return alert('No location found');
