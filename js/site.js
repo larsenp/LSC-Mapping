@@ -79,7 +79,7 @@ function loadResults(center, results, list) {
 						inPolygon = inPolygon || gju.pointInPolygon(
 							 {type: 'Point',
 							 coordinates: [center.lon, center.lat]}
-							, r.features[0].geometry
+							, r.features[i].geometry
 						);
 					}
 					return inPolygon;
