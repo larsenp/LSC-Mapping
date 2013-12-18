@@ -3,7 +3,13 @@
                                                                                 
 "features": [
 	{ "type": "Feature",
-        "geometry": {"type": "Point", "coordinates": [-71.3216354, 41.4763348]}
+        "geometry": {"type": "Point", "coordinates": [-71.3216354, 41.4763348]},
+		  "name": "Newport"
+   }
+	,
+	{ "type": "Feature",
+        "geometry": {"type": "Point", "coordinates": [-71.1750453675603, 41.4928222579372]},
+		  "name": "Newport"
    }
 	,
 	{ "type": "Feature", 
