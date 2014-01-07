@@ -14,11 +14,11 @@ $.ajax({
                 $('#fm').on('submit', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
-                    $.ajax('http://api.tiles.mapbox.com/v3/tmcw.map-jcq5zhdm/geocode/' +
-                      encodeURIComponent($('#address').val()) + '.json').done(function(res) {
-                          if (res.results && res.results[0] && res.results[0][0]) {
-                              var areas = findLocation(dat, res.results[0][0]);
-                              if (areas.length) loadResults(res.results[0][0], areas, master);
+							$.ajax('http://www.mapquestapi.com/geocoding/v1/address?key=Fmjtd%7Cluur296an9%2Cb0%3Do5-90r514&location=' +
+							encodeURIComponent($('#address').val())).done(function(res) {
+									if (res.results && res.results[0] && res.results[0].locations && res.results[0].locations[0]) {
+                              var areas = findLocation(dat, res.results[0].locations[0]);
+                              if (areas.length) loadResults(res.results[0].locations[0], areas, master);
                           }
                       });
                     return false;
@@ -38,11 +38,11 @@ function findLocation(index, ll) {
     for (var i = 0; i < index.length; i++) {
 
 
-     if (ll.lat > index[i][0] &&
-            ll.lat < index[i][1] &&
+     if (ll.displayLatLng.lat > index[i][0] &&
+            ll.displayLatLng.lat < index[i][1] &&
 
-            ll.lon > index[i][2] &&
-            ll.lon < index[i][3]) {
+            ll.displayLatLng.lng > index[i][2] &&
+            ll.displayLatLng.lng < index[i][3]) {
 
 		  
             results.push(index[i]);
@@ -78,7 +78,7 @@ function loadResults(center, results, list) {
 					for (var i = 0; i < r.features.length; i++) {
 						inPolygon = inPolygon || gju.pointInPolygon(
 							 {type: 'Point',
-							 coordinates: [center.lon, center.lat]}
+							 coordinates: [center.displayLatLng.lng, center.displayLatLng.lat]}
 							, r.features[i].geometry
 						);
 					}
@@ -89,7 +89,7 @@ function loadResults(center, results, list) {
 
         fl.clearLayers();
         fl.addData(res);
-        fl.addData({ type: 'Point', coordinates: [center.lon, center.lat] });
+        fl.addData({ type: 'Point', coordinates: [center.displayLatLng.lng, center.displayLatLng.lat] });
         map.fitBounds(fl.getBounds());
 
         var $info = $('#info')
