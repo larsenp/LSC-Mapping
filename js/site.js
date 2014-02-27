@@ -6,6 +6,7 @@ var fl = L.geoJson().addTo(map);
 
 $.ajax({
     url: 'Programs.json',
+	 dataType: 'json',
     success: function(programs) {
         $.ajax({
 				url: 'Rectangles.json',
@@ -103,25 +104,12 @@ function loadResults(center, results, programs) {
         for (var i = 0; i < programs.length; i++) {
 
             if (programs[i].Serv_Area_ID == sa) {
-/*                for (var k in list[i]) {
-                    $('<strong></strong>')
-                        .text(k + ': ')
-                        .appendTo($info);
-                    $('<span></span>')
-                        .text(list[i][k])
-                        .appendTo($info);
-                    $('<br />')
-                        .appendTo($info);
-                }*/
 					 var $tr = $('<tr></tr>').appendTo($info)
-					 $('<td><strong>Program Name: </strong></td>').appendTo($tr);
-					 $('<td>' + programs[i]["R_Legalname"] + '</td>').appendTo($tr);
+					 $('<td><strong>' + programs[i]["R_Legalname"] + '</strong></td>').appendTo($tr);
 					 var $tr = $('<tr></tr>').appendTo($info)
-					 $('<td><strong>Web Site: </strong></td>').appendTo($tr);
-					 $('<td><a href="' +  programs[i]["Web_URL"] + '" target="_blank">' + programs[i]["Web_URL"] + '</a></td>').appendTo($tr);
+					 $('<td>For legal help, call <strong>' + programs[i]["Local_800"] + ' </strong></td>').appendTo($tr);
 					 var $tr = $('<tr></tr>').appendTo($info)
-					 $('<td><strong>Phone: </strong></td>').appendTo($tr);
-					 $('<td>' + programs[i]["Local_800"] + '</td>').appendTo($tr);
+					 $('<td>Web Site: ' + '<a href="' +  programs[i]["Web_URL"] + '" target="_blank">' + programs[i]["Web_URL"] + '</a></td>').appendTo($tr);
             }
         }
     });
