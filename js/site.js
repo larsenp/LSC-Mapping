@@ -17,13 +17,21 @@ $.ajax({
                     e.stopPropagation();
 							$.ajax('http://www.mapquestapi.com/geocoding/v1/address?key=Fmjtd%7Cluur296an9%2Cb0%3Do5-90r514&location=' +
 							encodeURIComponent($('#address').val())).done(function(res) {
-									if (res.results && res.results[0] && res.results[0].locations && res.results[0].locations[0]) {
+									if (res.results && res.results[0] && res.results[0].locations && res.results[0].locations[0] && res.results[0].locations[0].geocodeQuality != "COUNTRY") {
                               var areas = findLocation(dat, res.results[0].locations[0]);
                               if (areas.length) loadResults(res.results[0].locations[0], areas, programs);
+									  else {
+											alert("Sorry, we couldn't find a match for \"" + $('#address').val() + "\". Please try again.");
+									  }
                           }
+								  else {
+										alert("Sorry, we couldn't find a match for \"" + $('#address').val() + "\". Please try again.");
+								  }
                       });
                     return false;
                 });
+					 if($('#fm').html != '')
+					 	$('#fm').trigger('submit');
             },
 				error: function(jqxhr, status, error) {
 						alert("Status: " + status + ". Error: " + error);
@@ -104,12 +112,22 @@ function loadResults(center, results, programs) {
         for (var i = 0; i < programs.length; i++) {
 
             if (programs[i].Serv_Area_ID == sa) {
+					var aShortUrl = programs[i]["Web_URL"];
+					var aSlashes = aShortUrl.indexOf("//");
+					if (aSlashes > 0) aShortUrl = aShortUrl.substring(aSlashes + 2);
+					if (aShortUrl.charAt(aShortUrl.length - 1) == "/")
+						aShortUrl = aShortUrl.substring(0, aShortUrl.length - 1);
+					var aPhone = programs[i]["Local_800"];
+					if(aPhone == "") aPhone = programs[i]["Phone"];
+					aPhone = aPhone.replace("(", "");
+					aPhone = aPhone.replace(") ", "-");
+					aPhone = aPhone.replace(")", "-");
 					 var $tr = $('<tr></tr>').appendTo($info)
-					 $('<td><strong>' + programs[i]["R_Legalname"] + '</strong></td>').appendTo($tr);
+					 $('<td><strong><a href="' +  programs[i]["Web_URL"] + '" target="_blank">' + programs[i]["R_Legalname"] + '</a></strong></td>').appendTo($tr);
 					 var $tr = $('<tr></tr>').appendTo($info)
-					 $('<td>For legal help, call <strong>' + programs[i]["Local_800"] + ' </strong></td>').appendTo($tr);
+					 $('<td>For legal help, call <strong>' + aPhone + ' </strong></td>').appendTo($tr);
 					 var $tr = $('<tr></tr>').appendTo($info)
-					 $('<td>Web Site: ' + '<a href="' +  programs[i]["Web_URL"] + '" target="_blank">' + programs[i]["Web_URL"] + '</a></td>').appendTo($tr);
+					 $('<td>Website: ' + '<a href="' +  programs[i]["Web_URL"] + '" target="_blank">' + aShortUrl + '</a></td>').appendTo($tr);
             }
         }
     });
