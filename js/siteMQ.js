@@ -1,8 +1,34 @@
 var pip = require('geojson-utils');
-var map = L.mapbox.map('map', 'tmcw.map-oitj0si5')
-    .setView([40, -74.50], 9);
 
-var fl = L.geoJson().addTo(map);
+// create an object for options
+var options = {
+ elt: document.getElementById('map'),           // ID of map element on page
+ zoom: 10,                                      // initial zoom level of the map
+ latLng: { lat: 38.743943, lng: -77.020089 },  // center of map in latitude/longitude
+ mtype: 'map',                                  // map type (map, sat, hyb); defaults to map
+ bestFitMargin: 0,                              // margin offset from map viewport when applying a bestfit on shapes
+ zoomOnDoubleClick: true                        // enable map to be zoomed in when double-clicking on map
+};
+
+// construct an instance of MQA.TileMap with the options object
+window.map = new MQA.TileMap(options);
+
+var map = window.map;
+
+MQA.withModule('largezoom', 'mousewheel', function() {
+	
+	// add the Large Zoom control
+	map.addControl(
+	  new MQA.LargeZoom(),
+	  new MQA.MapCornerPlacement(MQA.MapCorner.TOP_LEFT, new MQA.Size(5,5))
+	);
+	
+	// enable zooming with your mouse
+	//map.enableMouseWheelZoom();
+
+});
+
+
 $.ajax({
     url: path + 'Programs.json',
 	 dataType: 'json',
@@ -112,10 +138,28 @@ function loadResults(center, results, programs) {
 
         if (!res) return alert('No location found');
 
-        fl.clearLayers();
-        fl.addData(res);
-        fl.addData({ type: 'Point', coordinates: [center.displayLatLng.lng, center.displayLatLng.lat] });
-        map.fitBounds(fl.getBounds());
+        //fl.clearLayers(); clear geojson layers
+        //fl.addData(res); add result (matched geojson polygons) to map)
+        //fl.addData({ type: 'Point', coordinates: [center.displayLatLng.lng, center.displayLatLng.lat] }); add point corresponding to location from user query
+
+ 
+			var userLoc = { lat: center.displayLatLng.lat, lng: center.displayLatLng.lng };
+		  map.setCenter(userLoc);
+		  var userPin = new MQA.Poi({ lat: center.displayLatLng.lat, lng: center.displayLatLng.lng });
+		  map.addShape(userPin);
+			 MQA.withModule('shapes', function() {
+				 
+				// create an instance of MQA.PolygonOverlay
+				var poly = new MQA.PolygonOverlay();
+			 
+				// set the shape points
+				poly.setShapePoints(res.features[0].geometry.coordinates[0]);
+			 
+				// add the overlay to the map's default shape collection
+				map.addShape(poly);
+			 
+			 });
+        //map.fitBounds(fl.getBounds()); set map bounds
 
 			var sa = res.features[0].properties["SA"]
         var $info = $('#info').html("");
