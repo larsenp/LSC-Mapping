@@ -15,16 +15,17 @@ window.map = new MQA.TileMap(options);
 
 var map = window.map;
 
+
 MQA.withModule('largezoom', 'mousewheel', function() {
 	
 	// add the Large Zoom control
-	map.addControl(
+	/*map.addControl(
 	  new MQA.LargeZoom(),
 	  new MQA.MapCornerPlacement(MQA.MapCorner.TOP_LEFT, new MQA.Size(5,5))
-	);
+	);*/
 	
 	// enable zooming with your mouse
-	//map.enableMouseWheelZoom();
+	map.enableMouseWheelZoom();
 
 });
 

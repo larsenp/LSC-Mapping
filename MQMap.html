@@ -1,27 +1,27 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Mapquest map</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>Mapquest map</title>
 	<script src="http://www.mapquestapi.com/sdk/js/v7.1.s/mqa.toolkit.js?key=Fmjtd%7Cluur296an9%2Cb0%3Do5-90r514"></script>
-	<script type="text/javascript">
-	 
-	</script>
 	<link rel='stylesheet' type='text/css' href='css/style.css' />
 	<link rel='stylesheet' type='text/css' href='css/site.css' />
 
 </head>
 
 <body>
-        <div class='col8 margin2 pad2'>
-            <form id='fm' class='center pad2'>
-                <input id='address' type='text'  />
-                <input type='submit' id='search' value='search' />
-            </form>
-            <table id='info'><tr><td></td></tr></table>
-            <div id='map' ></div>
-        </div>
-        <script src='js/jquery-2.0.3.min.js' type='text/javascript'></script>
+	 <div class='col8 margin2 pad2'>
+		  <form id='fm' class='center pad2'>
+				 <table width="100%" border="0" cellpadding="0" cellspacing="0" id="noline">
+			  <tr>
+				 <td width="60%"><input id='address' type='text' placeholder='Search by city and state, zipcode, or complete address' /></td>
+				 <td> </td>
+				 <td width="40%"><input type='submit' class="search" value='Search' /></td>
+			  </tr>
+			</table>
+			</form>
+			<table id='info'><tr><td></td></tr></table>
+			<div id='map'></div>
+	  </div>        <script src='js/jquery-2.0.3.min.js' type='text/javascript'></script>
         <script src='js/queue.js' type='text/javascript'></script>
         <script src='js/pip.js' type='text/javascript'></script>
         <script src='js/environment.js' type='text/javascript'></script>

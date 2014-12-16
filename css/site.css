@@ -2,6 +2,10 @@
     height:500px;
 }
 
+#map img {
+	max-width: none !important;
+}
+
 #fm input[type=submit] {
     padding:3px 10px;
 }
