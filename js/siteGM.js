@@ -53,7 +53,7 @@ var pip = require('geojson-utils');
 		},
 		//Utility function to alert user of failed search
 		searchFail: function() {
-			alert("Sorry, we couldn't find a match for \""+that.view.search.value+"\". Please try again.");
+			alert("Sorry, we couldn't find a match for \""+this.view.search.value+"\". Please try again.");
 		},
 		//Add event listeners to DOM elements and mapQuery object
 		setHandlers: function() {
@@ -69,9 +69,15 @@ var pip = require('geojson-utils');
 					that.triggerSearch();
 				})
 			})
+			//Trigger a search when Enter is pressed
+			$(this.view.search).on("keydown",function(e) {
+				if (e.which == 13 || e.keyCode == 13) {
+					that.triggerSearch();
+				}
+			})
 			$(this).on({
-				//Pass places_changed event from autocomplete field to mapQuery
-				"places_changed":function(e,data) {
+				//Pass place_changed event from autocomplete field to mapQuery
+				"place_changed":function(e,data) {
 					//Verify reference data files have been loaded successfully
 					if (this.model.dataReady) {
 						//Store current place as activePlace for later reference
@@ -95,7 +101,7 @@ var pip = require('geojson-utils');
 						}
 					} else {
 						setTimeout((function() {
-							$(this).trigger("places_changed");
+							$(this).trigger("place_changed");
 						}).bind(this),100);
 					}
 				}
@@ -134,20 +140,21 @@ var pip = require('geojson-utils');
 				zoom: 4
 			})
 			//Generate autocomplete field
-			this.autocomplete = new google.maps.places.SearchBox(this.view.search,{ 
+			this.autocomplete = new google.maps.places.Autocomplete(this.view.search,{ 
 				types: ['geocode'],
-				components: "country:us"
+				location: new google.maps.LatLng(42.877742,-97.380979),
+				radius:2150
 			})
 			this.setHandlers();
 			this.getData();
 			var that = this;
-			//Listen for places_changed event on autocomplete field, identify place, and pass up to controller
-			google.maps.event.addListener(this.autocomplete, 'places_changed', function() {
-				var place = that.autocomplete.getPlaces()[0];
+			//Listen for place_changed event on autocomplete field, identify place, and pass up to controller
+			google.maps.event.addListener(this.autocomplete, 'place_changed', function() {
+				var place = that.autocomplete.getPlace();
 				if (!place) {
 					this.searchFail();
-				} else {
-					$(that).trigger("places_changed",{place:place});
+				} else if (place.geometry) {
+					$(that).trigger("place_changed",{place:place});
 				}
 			})
 			//Check for URL query string address and run search
@@ -236,7 +243,7 @@ function loadResults(center, results, programs) {
 			 });*/
         //map.fitBounds(fl.getBounds()); set map bounds
 
-			var sa = res.features[0].properties["SA"]
+		var sa = res.features[0].properties["SA"]
         var $info = $('#info').html("");
             //.html(res.properties.Description);
         //var rno = $($('#info td')[1]).text().trim();
