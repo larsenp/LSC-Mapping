@@ -45,10 +45,10 @@ var pip = require('geojson-utils');
 		//Utility function that programmatically initiates a search on string present in the input field
 		triggerSearch: function() {
 			//Have to run a bit of a hacky series of event triggers here to mimic user input because Google doesn't provide a good handler to trigger an Autocomplete search
-			google.maps.event.trigger( this.view.search, 'keydown', {keyCode:40});
-	    	google.maps.event.trigger( this.view.search, 'keydown', {keyCode:13});
+			google.maps.event.trigger( this.view.search, 'keydown', {keyCode:40,which:40});
+	    	google.maps.event.trigger( this.view.search, 'keydown', {keyCode:13,which:13});
 	    	google.maps.event.trigger( this.view.search, 'focus');
-	    	google.maps.event.trigger( this.view.search, 'keydown', {keyCode:13});
+	    	google.maps.event.trigger( this.view.search, 'keydown', {keyCode:13,which:13});
 	    	google.maps.event.trigger( this.view.search, 'blur');
 		},
 		//Utility function to alert user of failed search
@@ -71,7 +71,7 @@ var pip = require('geojson-utils');
 			})
 			//Trigger a search when Enter is pressed
 			$(this.view.search).on("keydown",function(e) {
-				if (e.which == 13 || e.keyCode == 13) {
+				if ((e.which == 13 || e.keyCode == 13) && !$(".pac-item-selected").length) {
 					that.triggerSearch();
 				}
 			})
@@ -152,13 +152,34 @@ var pip = require('geojson-utils');
 			google.maps.event.addListener(this.autocomplete, 'place_changed', function() {
 				var place = that.autocomplete.getPlace();
 				if (!place) {
-					this.searchFail();
+					that.searchFail();
 				} else if (place.geometry) {
 					$(that).trigger("place_changed",{place:place});
+				} else {
+					//No geometry returned for location query, have to ask Google Place Autocomplete Service explicitly for location details
+					var service = new google.maps.places.AutocompleteService();
+  					service.getPlacePredictions({ 
+  						input: place.name,
+  						types: ['geocode'],
+  						location:new google.maps.LatLng(42.877742,-97.380979),
+  						radius:2150
+  					}, function(results) {
+  						//Place Autocomplete Service doesn't return lat/lng, so have to ask Places Service for that once we've identified the placeId
+  						if (results && results.length) {
+  							var service = new google.maps.places.PlacesService(that.map);
+  							service.getDetails({placeId:results[0].place_id},function(result) {
+  								$(that).trigger("place_changed",{place:result});
+  							});
+  						} else {
+  							that.searchFail();
+  						}
+  					});
+
 				}
 			})
 			//Check for URL query string address and run search
 			this.queryOnURL();
+			
 			return this;
 		}
 	}).init();

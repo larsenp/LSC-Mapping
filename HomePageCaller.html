@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Untitled Document</title>
+</head>
+
+<body>
+<style type="text/css">
+<!--
+select,
+textarea,
+input[type=text] {
+	display:inline-block;
+	height:30px;
+	width:259px;
+	max-width:259px;
+	margin-bottom:0px;
+        font-family: 'Droid Sans', Arial, Helvetica, sans-serif;
+	font-size:13px;
+	vertical-align:middle;
+	border-radius:1px;
+	padding-left: 4px;
+  }
+#fm input[type=submit] {
+    padding:3px 10px;
+}  
+input[type=submit] {
+  background-color:#00395D;
+  cursor:pointer;
+  color:#fff;
+  font-weight:bold;
+  text-transform:uppercase;
+  border:none;
+  padding:9px 20px;
+  font-family: 'Droid Sans', Arial, Helvetica, sans-serif;
+  -webkit-box-shadow:2px 2px 4px rgba(0,0,0,0.1);
+     -moz-box-shadow:2px 2px 4px rgba(0,0,0,0.1);
+          box-shadow:2px 2px 4px rgba(0,0,0,0.1);
+  }
+  input[type=submit]:hover {
+    background-color:#002f4c;
+    }
+  input[type=submit]:active {
+    position:relative;
+    top:1px;
+    }
+	
+/* added by Alex Tucker, 2/26/14, controls search button formatting */
+.search {
+	background: url("http://www.lsc.gov/sites/all/themes/lsc/images/signup-items.png") no-repeat scroll 0 -45px rgba(0, 0, 0, 0);
+    border: medium none;
+    color: #FFFFFF;
+    cursor: pointer;
+    font-size: 13px;
+    height: 29px;
+    width: 72px;
+	text-transform: lowercase;
+}	
+a:hover {
+	color: #C00;
+}
+-->
+</style>
+
+<p>Find information about LSC-funded programs in your area.</p>
+<form action="/lsc-mapping/GMap.html" id='fm' method='get' class='center pad2'>
+                <table width="259" border="0" cellpadding="0" cellspacing="0" id="noline">
+              <tr>
+                <td><input id='address' name='address' type='text' placeholder='Search by city, state, or zipcode' /></td>
+                </tr>
+              <tr>
+                <td>&nbsp;</td>
+              </tr>
+              <tr>
+                <td><input type='submit' class="search" value='Search' /></td>
+                </tr>
+            </table>
+            </form>
+	</body>
+</html>
